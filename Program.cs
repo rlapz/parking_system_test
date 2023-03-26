@@ -5,15 +5,31 @@ using System.Collections;
 // Vehicle 
 //
 class Plate {
-	private string Prefix;
-	private uint   Middle;
-	private string Suffix;
+	private bool   IsEven = false;
+	private string Prefix = "";
+	private string Middle = "";
+	private string Suffix = "";
 
-	public Plate(string pre, uint mid, string suf)
+	public bool Parse(string input)
 	{
-		this.Prefix = pre;
-		this.Middle = mid;
-		this.Suffix = suf;
+		var arr = input.Split("-");
+		if (arr.Length != 3)
+			return false;
+
+		uint num = 0;
+		try {
+			num = Convert.ToUInt32(arr[1]);
+		} catch (Exception) {
+			return false;
+		}
+
+		if ((num & 1) == 0)
+			this.IsEven = true;
+
+		this.Prefix = arr[0];
+		this.Middle = arr[1];
+		this.Suffix = arr[2];
+		return true;
 	}
 
 	public override string ToString()
@@ -44,13 +60,13 @@ class Vehicle {
 // ParkingSystem
 //
 class ParkingSystem {
-	private bool        is_alive = true;
-	private Vehicle[]   items = default!;
-	private Stack<uint> slots = default!;
+	private bool        IsAlive = true;
+	private Vehicle[]   Items = default!;
+	private Stack<uint> Slots = default!;
 
 	public void GetInput()
 	{
-		while (this.is_alive) {
+		while (this.IsAlive) {
 			Console.Write("$ ");
 			var input = Console.ReadLine();
 			if (input == null)
@@ -115,7 +131,7 @@ class ParkingSystem {
 
 		// exit
 		else if (inp == "exit")
-			this.is_alive = false;
+			this.IsAlive = false;
 	}
 
 	private void CreateSlots(string[] input)
@@ -131,13 +147,13 @@ class ParkingSystem {
 			goto inval;
 		}
 
-		this.items = new Vehicle[num +1];
-		this.slots = new Stack<uint>((int)num);
+		this.Items = new Vehicle[num +1];
+		this.Slots = new Stack<uint>((int)num);
 
 		// fill the stack and initialize the items
 		for (uint i = num; i > 0; i--) {
-			this.slots.Push(i -1);
-			this.items[i -1] = new Vehicle();
+			this.Slots.Push(i -1);
+			this.Items[i -1] = new Vehicle();
 		}
 
 		Console.WriteLine($"Created a parking lot with {num} slots");
@@ -149,16 +165,16 @@ inval:
 
 	private void Park()
 	{
-		if (this.slots.Count == 0)
+		if (this.Slots.Count == 0)
 			return;
 
-		var v = this.slots.Pop();
-		Console.WriteLine(this.items[v].Timer);
+		var v = this.Slots.Pop();
+		Console.WriteLine(this.Items[v].Timer);
 	}
 
 	private void Leave()
 	{
-		if (this.slots.Count == 0)
+		if (this.Slots.Count == 0)
 			return;
 	}
 }
